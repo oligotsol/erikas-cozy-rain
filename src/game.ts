@@ -63,6 +63,7 @@ export class Game {
     }
 
     hud.hidden = scene === "title";
+    hud.classList.toggle("is-off", scene === "title");
     this.syncHud();
     this.clearWindowRain();
 

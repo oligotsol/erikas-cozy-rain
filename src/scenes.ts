@@ -1,3 +1,4 @@
+import { cinemaArt, coffeeArt, icons, roomArt } from "./art";
 import { books, beans, brews, treats, shows, pick, coffeeDone, bookDone, bakeDone, showDone } from "./copy";
 import type { GameState } from "./state";
 import { UNLOCK_THRESHOLD } from "./state";
@@ -48,51 +49,9 @@ export function renderHub(root: HTMLElement, api: SceneApi): void {
 
   root.innerHTML = `
     <section class="hub">
-      <div class="room-stage" aria-hidden="true">
-        <div class="room-wall"></div>
-        <div class="window">
-          <div class="window-night">
-            <div class="far-trees"></div>
-            <div class="window-glow"></div>
-          </div>
-          <canvas class="window-rain"></canvas>
-          <div class="window-glass"></div>
-          <div class="window-muntins"></div>
-          <div class="curtain curtain-left"></div>
-          <div class="curtain curtain-right"></div>
-          <div class="sill">
-            <div class="plant ${unlocked ? "is-lush" : ""}">
-              <span class="leaf leaf-a"></span>
-              <span class="leaf leaf-b"></span>
-              <span class="leaf leaf-c"></span>
-              <span class="pot"></span>
-            </div>
-            ${unlocked ? `<div class="heart-mug" title="the heart mug"></div>` : ""}
-          </div>
-        </div>
-        <div class="lamp">
-          <div class="shade"></div>
-          <div class="lamp-glow"></div>
-          <div class="lamp-stem"></div>
-        </div>
-        ${
-          unlocked
-            ? `<figure class="keepsake">
-                <div class="frame-photo"></div>
-                <figcaption>rainy tuesday</figcaption>
-              </figure>`
-            : `<figure class="empty-hook"><span></span></figure>`
-        }
-        <div class="mantel"></div>
-        <div class="floor"></div>
-        <div class="rug"></div>
-        <div class="couch">
-          <div class="cushion"></div>
-          <div class="blanket"></div>
-        </div>
-        <div class="tv">
-          <div class="tv-glow"></div>
-        </div>
+      <div class="room-stage">
+        ${roomArt(unlocked)}
+        <canvas class="window-rain room-window-rain" aria-hidden="true"></canvas>
       </div>
 
       <div class="hub-copy">
@@ -113,34 +72,35 @@ export function renderHub(root: HTMLElement, api: SceneApi): void {
 
       <div class="activities">
         <button class="activity" type="button" data-action="coffee">
-          <span class="activity-art coffee-art" aria-hidden="true"></span>
+          <span class="activity-art">${icons.coffee}</span>
           <span class="activity-kicker">in the kitchen</span>
           <strong>Make coffee</strong>
           <em>The kettle already knows your name.</em>
           <span class="chip">cozy points</span>
         </button>
         <button class="activity" type="button" data-action="book">
-          <span class="activity-art book-art" aria-hidden="true"></span>
+          <span class="activity-art">${icons.book}</span>
           <span class="activity-kicker">by the lamp</span>
           <strong>Read a book</strong>
           <em>The shelf saved you a quiet chapter.</em>
           <span class="chip">cozy points</span>
         </button>
         <button class="activity" type="button" data-action="bake">
-          <span class="activity-art bake-art" aria-hidden="true"></span>
+          <span class="activity-art">${icons.bake}</span>
           <span class="activity-kicker">oven's warm</span>
           <strong>Bake a treat</strong>
           <em>The oven clicked on like it missed you.</em>
           <span class="chip">cozy points</span>
         </button>
         <button class="activity activity-special" type="button" data-action="show">
-          <span class="activity-art show-art" aria-hidden="true"></span>
+          <span class="activity-art">${icons.show}</span>
           <span class="activity-kicker">the sweet one</span>
           <strong>Watch a show with babe</strong>
           <em>The blanket is already big enough for two.</em>
           <span class="chip chip-babe">extra babe points</span>
         </button>
       </div>
+      <p class="gift-line hand">made with a warm lamp and a lot of love</p>
     </section>
   `;
 
@@ -197,15 +157,8 @@ export function renderCoffee(root: HTMLElement, api: SceneApi): void {
         <section class="play brew-scene">
           <h2>Almost a hug in a cup</h2>
           <p class="lead">${escapeHtml(bean.name)} · ${escapeHtml(brew.name)}</p>
-          <div class="brew-stage" data-brew="${escapeHtml(brew.id)}">
-            <div class="kettle"></div>
-            <div class="pour"></div>
-            <div class="mug">
-              <div class="coffee-fill"></div>
-              <div class="steam s1"></div>
-              <div class="steam s2"></div>
-              <div class="steam s3"></div>
-            </div>
+          <div class="brew-stage is-pouring">
+            ${coffeeArt}
           </div>
           <p class="hand brew-line">Listen — the rain and the pour are doing a little duet.</p>
         </section>
@@ -219,6 +172,7 @@ export function renderCoffee(root: HTMLElement, api: SceneApi): void {
         <section class="play">
           <h2>It's ready, Erika</h2>
           <p class="lead">The first sip fogs your eyelashes a little. ${escapeHtml(pick(coffeeDone))}</p>
+          <div class="brew-stage is-ready">${coffeeArt}</div>
           <div class="share-row">
             <button class="btn btn-lamp" type="button" data-action="share">Pour a second mug for babe</button>
             <button class="btn btn-ghost" type="button" data-action="solo">Keep this one all to yourself</button>
@@ -500,18 +454,9 @@ export function renderShow(root: HTMLElement, api: SceneApi): void {
     } else if (step === "watch") {
       root.innerHTML = `
         <section class="cinema">
-          <div class="cinema-window">
-            <canvas class="window-rain"></canvas>
-            <div class="window-glass"></div>
-          </div>
-          <div class="cinema-tv">
-            <div class="scan"></div>
-            <p>${escapeHtml(show.title)}</p>
-          </div>
-          <div class="cinema-couch">
-            <div class="person erika"></div>
-            <div class="person babe"></div>
-            <div class="shared-blanket"></div>
+          <div class="cinema-frame">
+            ${cinemaArt(escapeHtml(show.title), false)}
+            <canvas class="window-rain cinema-rain" aria-hidden="true"></canvas>
           </div>
           <p class="cinema-caption hand">Rain on the window. Soft TV glow. A blanket that forgot how to be for one person.</p>
           <button class="btn btn-babe" type="button" data-action="lean">Lean a little closer</button>
@@ -520,18 +465,9 @@ export function renderShow(root: HTMLElement, api: SceneApi): void {
     } else {
       root.innerHTML = `
         <section class="cinema cinema-close">
-          <div class="cinema-window">
-            <canvas class="window-rain"></canvas>
-            <div class="window-glass"></div>
-          </div>
-          <div class="cinema-tv dimmer">
-            <div class="scan"></div>
-          </div>
-          <div class="cinema-couch closer">
-            <div class="person erika"></div>
-            <div class="person babe"></div>
-            <div class="shared-blanket"></div>
-            <div class="heart-float">♡</div>
+          <div class="cinema-frame">
+            ${cinemaArt(escapeHtml(show.title), true)}
+            <canvas class="window-rain cinema-rain" aria-hidden="true"></canvas>
           </div>
           <p class="cinema-caption">${escapeHtml(pick(showDone))}</p>
           <button class="btn btn-babe" type="button" data-action="finish">Stay in this glow</button>
